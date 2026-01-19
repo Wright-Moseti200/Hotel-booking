@@ -11,10 +11,10 @@ cloudinary.config({
 let storage = new CloudinaryStorage({
     cloudinary:cloudinary,
     params:{
-        folder_name:"Hotel Pictures",
-        allowed_formats:["jpg","png","jpeg","gif",""]
+        folder:"Hotel Pictures",
+        allowed_formats:["jpg","png","jpeg","gif"]
     }
 });
 
-let upload = multer({storage:storage});
+let upload = multer({storage:storage,limits:{fileSize:10*1024*1024}});
 module.exports = {upload};

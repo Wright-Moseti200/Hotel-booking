@@ -4,6 +4,7 @@ let cookieparser = require("cookie-parser");
 let rateLimit = require("express-rate-limit");
 let cors = require("cors");
 const { connectDB } = require("./config/config");
+const { userRouter } = require("./routes/userRoutes");
 let port = 4000;
 let limit = rateLimit({
     windowMs:10*60*1000,
@@ -18,7 +19,8 @@ app.get("/",(req,res)=>{
     res.send("Express server is running");
 });
 
+app.use("/api/user",userRouter);
 
 app.listen(port,()=>{
-console.log(`server is running on port ${port}`);
+console.log(`Server is running on port ${port}`);
 });
