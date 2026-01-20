@@ -58,7 +58,7 @@ let addrooms = async(req,res)=>{
                 message:"Enter all valid data"
             });
         }
-        let hoteldata = await Hotel.findOne({"owner._id":req.user.id}).populate("owner");
+        let hoteldata = await Hotel.findOne({owner:req.user.id}).populate("owner");
         if(!hoteldata){
             return res.status(404).json({
                 success:false,
@@ -87,7 +87,7 @@ let addrooms = async(req,res)=>{
 }
 
 //upload images
-let uploadimages = ()=>{
+let uploadimages = (req,res)=>{
     try{
         if(!req.files){
             return res.status(404).json({
