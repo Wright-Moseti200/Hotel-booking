@@ -102,7 +102,7 @@ let signup = async(req,res)=>{
     }
 }
 
-// FIXED booking function
+// booking function
 let booking = async(req, res) => {
     try {
         let { totalPrice, checkin, checkout, roomId, hotelId, guests } = req.body;
@@ -135,7 +135,7 @@ let booking = async(req, res) => {
     }
 }
 
-// FIXED registerhotel function
+// registerhotel function
 let registerhotel = async(req, res) => { 
     try {
         let { name, address, city, contact } = req.body;
@@ -165,7 +165,7 @@ let registerhotel = async(req, res) => {
     }
 }
 
-// FIXED getbookings function
+//getbookings function
 let getbookings = async(req, res) => {
     try {
         let bookings = await Booking.find({ user: req.user.id })
@@ -242,6 +242,7 @@ let paymentStripe = async(req,res)=>{
     }
 }
 
+//stripe webhook
 let stripeWebHook = (req,res)=>{
     try{
         let event;
@@ -261,6 +262,11 @@ let stripeWebHook = (req,res)=>{
         });
     }
 }
+
+//mpesapayment 
+
+
+//mpesawebhook
 
 
 module.exports = {login,signup,booking,paymentStripe,stripeWebHook,getbookings,registerhotel};

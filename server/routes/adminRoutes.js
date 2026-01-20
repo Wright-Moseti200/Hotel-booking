@@ -1,10 +1,12 @@
-let express = require("express")
+let express = require("express");
+const { upload } = require("../middleware/upload");
+const { uploadimages, addrooms, getroomlistings, getbooking } = require("../controllers/adminController");
+const { auth } = require("../middleware/auth");
 let adminRoutes = express.Router();
 
-adminRoutes.post("/signup",);
-adminRoutes.post("/login",)
-adminRoutes.get("/getbookings",)
-adminRoutes.get("/getroomlistings",)
-adminRoutes.post("/addrooms")
+adminRoutes.get("/getbookings",getbooking);
+adminRoutes.get("/getroomlistings",getroomlistings);
+adminRoutes.post("/addrooms",auth,addrooms);
+adminRoutes.post("/uploadimages",upload.array("images",4),uploadimages);
 
 module.exports={adminRoutes};
