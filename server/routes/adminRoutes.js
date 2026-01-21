@@ -7,6 +7,6 @@ let adminRoutes = express.Router();
 adminRoutes.get("/getbookings",getbooking);
 adminRoutes.get("/getroomlistings",getroomlistings);
 adminRoutes.post("/addrooms",auth,addrooms);
-adminRoutes.post("/uploadimages",upload.array("images",4),uploadimages);
+adminRoutes.post("/uploadimages",upload.array("images",5),uploadimages);
 
 module.exports={adminRoutes};

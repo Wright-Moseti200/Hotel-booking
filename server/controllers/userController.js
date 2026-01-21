@@ -5,6 +5,20 @@ const { User } = require("../models/userSchema");
 const { Booking } = require("../models/bookingSchema");
 const { Hotel } = require("../models/hotelSchema");
 let stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+let IntaSend = require("intasend-node");
+let intasend = new IntaSend(process.env.INTASEND_PUBLIC_KEY,process.env.INTASEND_SECRET_KEY,process.env.TEST_STATUS);
+let nodemailer = require("nodemailer");
+const { Room } = require("../models/roomSchema");
+
+let transporter = nodemailer.createTransport({
+    host:process.env.HOST,
+    port:587,
+    secure:false,
+    auth:{
+        user:process.env.EMAIL,
+        pass:process.env.PASS
+    }
+});
 
 //login 
 let login = async(req,res)=>{
@@ -47,7 +61,7 @@ let login = async(req,res)=>{
         })
     }
     catch(error){
-        res.status(500).json({
+      return  res.status(500).json({
             success:false,
             message:error.message
         });
@@ -95,7 +109,7 @@ let signup = async(req,res)=>{
        });
     }
     catch(error){
-        res.status(500).json({
+      return  res.status(500).json({
             success:false,
             message:error.message
         });
@@ -103,7 +117,7 @@ let signup = async(req,res)=>{
 }
 
 // booking function
-let booking = async(req, res) => {
+let booking = async(req,res) => {
     try {
         let { totalPrice, checkin, checkout, roomId, hotelId, guests } = req.body;
         
@@ -113,6 +127,9 @@ let booking = async(req, res) => {
                 message: "Missing required data"
             });
         }
+        
+        await Room.findOneAndUpdate({_id:roomId},{isAvailable:false});
+
         let booking = new Booking({
             user: req.user.id, 
             room: roomId,
@@ -128,7 +145,7 @@ let booking = async(req, res) => {
             message: "Booked successfully"
         });
     } catch (error) {
-        res.status(500).json({
+      return  res.status(500).json({
             success: false,
             message: error.message
         });
@@ -158,7 +175,7 @@ let registerhotel = async(req, res) => {
             message: "Hotel registered successfully"
         });
     } catch (error) {
-        res.status(500).json({
+      return  res.status(500).json({
             success: false,
             message: error.message
         });
@@ -183,7 +200,7 @@ let getbookings = async(req, res) => {
             bookings: bookings
         });
     } catch (error) {
-        res.status(500).json({
+      return  res.status(500).json({
             success: false,
             message: error.message
         });
@@ -200,7 +217,8 @@ let paymentStripe = async(req,res)=>{
             });
         }
         let user = await User.findOne({_id:req.user.id});
-        let bookingdata = await Booking.findOne({_id:bookingId}).populate("user").populate("room").populate("hotel")
+        let bookingdatafind = await Booking.findOne({_id:bookingId}).populate("user").populate("room").populate("hotel");
+        let bookingdata = [bookingdatafind];
         let lineitems = bookingdata.map((element)=>({
             price_data:{
                 currency:"KES",
@@ -215,8 +233,8 @@ let paymentStripe = async(req,res)=>{
             payment_method_types:["card"],
             line_items:lineitems,
             mode:"payment",
-            success_url:"",
-            cancel_url:"",
+            success_url:"http://localhost:5173/success",
+            cancel_url:"http://localhost:5173/cancel",
             customer_email:user.email,
             metadata:{
                 bookingId:bookingId
@@ -235,7 +253,7 @@ let paymentStripe = async(req,res)=>{
         });
     }
     catch(error){
-        res.status(500).json({
+     return res.status(500).json({
             success: false,
             message: error.message
         });
@@ -256,7 +274,24 @@ let stripeWebHook = (req,res)=>{
         });
     }
     catch(error){
-        res.status(500).json({
+      return  res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+//logout
+let logout = async(req,res)=>{
+    try{
+        res.clearCookie("token");
+      return  res.status(200).json({
+            success:true,
+            message:"logged out successfully"
+        });
+    }
+    catch(error){
+      return  res.status(500).json({
             success: false,
             message: error.message
         });
@@ -264,9 +299,110 @@ let stripeWebHook = (req,res)=>{
 }
 
 //mpesapayment 
-
+let mpesapayment = async(req,res)=>{
+    try{
+        let {bookingid,phonenumber,} = req.body;
+        if(!bookingid||!phonenumber){
+            return res.status(404).json({
+                success:true,
+                message:"No data found"
+            });
+        }
+        let bookings = await Booking.findOne({_id:bookingid});
+        if(!bookings){
+            return res.status(404).json({
+                success:false,
+                message:"booking not found"
+            });
+        }
+       let user = await User.findOne({_id:req.user.id});
+       if(!user){
+        res.status(401).json({
+            success:false,
+            message:"User not found"
+        });
+       }
+       let response = await intasend.collection().mpesaStkPush({
+            phone_number:phonenumber,
+            email:user.email,
+            amount:bookings.totalPrice,
+            currency:"KES",
+            api_ref:bookingid
+        });
+       return res.status(200).json({
+        success:true,
+        message:"Payment Successful",
+        data:response
+       });
+    }
+    catch(error){
+        if (Buffer.isBuffer(error)) {
+        const decodedError = JSON.parse(error.toString('utf8'));
+        console.log("Decoded IntaSend Error:", decodedError);
+    } else {
+        console.log("Error:", error.message);
+    }
+    return res.status(500).json({
+        success:false,
+        message:error
+    })
+    }
+}
 
 //mpesawebhook
+let mpesawebhook = async(req,res)=>{
+    try{
+        let payload = req.body;
+        if(payload.challenge!==process.env.INTASEND_CHALLENGE){
+            return res.status(401).json({
+                success:false,
+                message:"Unauthorized"
+            });
+        }
+        if(payload.invoice_id&&payload.state){
+            if(payload.state==="COMPLETE"){
+                let bookingid = payload.api_ref;
+                if(bookingid){
+                    return res.status(404).json({
+                        success:false,
+                        message:"no bookingid"
+                    });
+                }
+              let booking = await Booking.findByIdAndUpdate({_id:bookingid},{paymentMethod:"Mpesa",isPaid:true}).populate("user").populate("room").populate("hotel");
+              transporter.sendMail({
+                from:process.env.EMAIL,
+                to:payload.data.customer.email,
+                subject:"Hotel Booking Details",
+                html:
+                `
+                <h1>Your Hotel Booking Details:</h1>
+                <br/>
+                <p>Thank you ffor your booking!Here are your details:</p>
+                <br/>
+                <p>Id:${booking._id}</p>
+                <p>${booking.hotel.name}</p>
+                <p>${booking.hotel.address} ${booking.hotel.city}</p>
+                <p>${Date.now()}</p>
+                <p>${booking.totalPrice}</p>
+                <br/>
+                <p>We look forward to welcoming you!</p>
+                <br/>
+                <p>If you nedd to make any changes, feelfree to contact us.</p>
+                `
+              });
+                return res.status(404).json({
+                    success:true,
+                    message:"Payment succcessful"
+                });
+            }
+        }
+    }
+    catch(error){
+        return res.status(500).json({
+        success:false,
+        message:error
+    }); 
+    }
+}
 
-
-module.exports = {login,signup,booking,paymentStripe,stripeWebHook,getbookings,registerhotel};
+module.exports = {login,signup,booking,paymentStripe,stripeWebHook,getbookings,registerhotel,logout,mpesapayment,mpesawebhook};
