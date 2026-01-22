@@ -362,7 +362,7 @@ let mpesawebhook = async(req,res)=>{
         if(payload.invoice_id&&payload.state){
             if(payload.state==="COMPLETE"){
                 let bookingid = payload.api_ref;
-                if(bookingid){
+                if(!bookingid){
                     return res.status(404).json({
                         success:false,
                         message:"no bookingid"
@@ -371,7 +371,7 @@ let mpesawebhook = async(req,res)=>{
               let booking = await Booking.findByIdAndUpdate({_id:bookingid},{paymentMethod:"Mpesa",isPaid:true}).populate("user").populate("room").populate("hotel");
               transporter.sendMail({
                 from:process.env.EMAIL,
-                to:payload.data.customer.email,
+                to:payload.email,
                 subject:"Hotel Booking Details",
                 html:
                 `

@@ -26,7 +26,7 @@ let getbooking = async(req,res)=>{
 }
 
 //getroomlisting
-let getroomlistings = async()=>{
+let getroomlistings = async(req,res)=>{
     try{
         let rooms = await Room.find({}).populate("hotel");
         if(!rooms){
