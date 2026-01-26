@@ -1,5 +1,5 @@
 let express = require("express");
-const { login, signup, getbookings, booking, registerhotel,paymentStripe, mpesapayment } = require("../controllers/userController");
+const { login, signup, getbookings, booking, registerhotel,paymentStripe, mpesapayment, logout } = require("../controllers/userController");
 const { auth } = require("../middleware/auth");
 let userRouter = express.Router();
 
@@ -9,6 +9,7 @@ userRouter.get("/getbooking",auth,getbookings);
 userRouter.post("/booking",auth,booking);
 userRouter.post("/registerhotel",auth,registerhotel);
 userRouter.post("/stripepayment",auth,paymentStripe);
-userRouter.post("/mpesaPayment",auth,mpesapayment)
+userRouter.post("/mpesaPayment",auth,mpesapayment);
+userRouter.get("/logout",logout);
 
 module.exports = {userRouter};

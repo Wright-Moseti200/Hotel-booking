@@ -7,6 +7,7 @@ let cors = require("cors");
 const { connectDB } = require("./config/config");
 const { userRouter } = require("./routes/userRoutes");
 const { stripeWebHook, mpesawebhook } = require("./controllers/userController");
+const { adminRoutes } = require("./routes/adminRoutes");
 
 let port = 4000;
 let limit = rateLimit({
@@ -24,7 +25,7 @@ app.get("/",(req,res)=>{
 });
 
 app.use("/api/user",userRouter);
-
+app.use("/api/user",adminRoutes);
 app.listen(port,()=>{
 console.log(`Server is running on port ${port}`);
 });
