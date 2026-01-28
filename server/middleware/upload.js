@@ -1,5 +1,5 @@
 let multer = require("multer")
-let cloudinary = require("cloudinary").v2
+let cloudinary = require("cloudinary").v2;
 let {CloudinaryStorage} = require("multer-storage-cloudinary")
 require("dotenv").config();
 cloudinary.config({

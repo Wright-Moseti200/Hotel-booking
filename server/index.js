@@ -11,21 +11,21 @@ const { adminRoutes } = require("./routes/adminRoutes");
 
 let port = 4000;
 let limit = rateLimit({
-    windowMs:10*60*1000,
-    max:100
+    windowMs: 10 * 60 * 1000,
+    max: 100
 });
-app.set("trust proxy",1);
-app.post("/webhook",express.raw({type:"application/json"}),stripeWebHook);
-app.post("/mpesaWebhook",express.raw({type:"application/json"}),mpesawebhook);
-app.use([express.json(),cookieparser(),limit,cors({origin:"http://localhost:5173/"})]);
+app.set("trust proxy", 1);
+app.post("/webhook", express.raw({ type: "application/json" }), stripeWebHook);
+app.post("/mpesaWebhook", express.raw({ type: "application/json" }), mpesawebhook);
+app.use([express.json(), cookieparser(), limit, cors({ origin: ["http://localhost:5173", "http://localhost:5174"], credentials: true })]);
 
 connectDB();
-app.get("/",(req,res)=>{
+app.get("/", (req, res) => {
     res.send("Express server is running");
 });
 
-app.use("/api/user",userRouter);
-app.use("/api/user",adminRoutes);
-app.listen(port,()=>{
-console.log(`Server is running on port ${port}`);
+app.use("/api/user", userRouter);
+app.use("/api/user", adminRoutes);
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
 });
