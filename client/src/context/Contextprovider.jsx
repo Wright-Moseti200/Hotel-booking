@@ -11,7 +11,7 @@ const Contextprovider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const backendUrl = "http://localhost:4000";
+  const backendUrl = "https://hotel-booking-two-alpha.vercel.app";
 
   // Modal State
   const [showAuthModal, setShowAuthModal] = useState(false);
