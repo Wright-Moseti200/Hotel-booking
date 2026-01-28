@@ -16,7 +16,7 @@ const ContextProvider = ({ children }) => {
 
   // Base URL for API requests
   const api = axios.create({
-    baseURL: 'https://hotel-booking-two-alpha.vercel.app/api/user',
+    baseURL: 'https://hotel-booking-two-alpha.vercel.app/api/admin',
     withCredentials: true, // Important for cookies
     headers: {
       'Content-Type': 'application/json',
