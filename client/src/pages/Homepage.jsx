@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
-import Search from '../components/Search'
+
 import Footer from '../components/Footer'
 import { assets, roomsDummyData, exclusiveOffers, testimonials } from "../assets/assets.js"
 import { Contextdata } from '../context/Contextprovider'
@@ -28,22 +28,21 @@ const Homepage = () => {
                 <Navbar />
 
                 <main className='relative z-10 flex flex-col h-full justify-center items-center px-4'>
-                    <div className='flex flex-col items-center text-center max-w-4xl pt-20'>
+                    <div className='flex flex-col items-center text-center max-w-4xl pt-20 md:pt-20'>
                         <span className='bg-white/20 backdrop-blur-sm text-white px-6 py-2 rounded-full text-sm font-medium tracking-wide border border-white/30'>
                             The Ultimate Hotel Experience
                         </span>
 
-                        <h1 className='text-white text-5xl md:text-7xl font-serif mt-8 font-bold leading-tight'>
-                            Discover Your Perfect <br /> Gateway Destination
+                        <h1 className='text-white text-4xl md:text-7xl font-serif mt-8 font-bold leading-tight'>
+                            Discover Your Perfect <br className='hidden md:block' /> Gateway Destination
                         </h1>
 
-                        <p className='mt-6 text-gray-200 text-lg md:text-xl max-w-2xl font-light leading-relaxed'>
+                        <p className='mt-6 text-gray-200 text-base md:text-xl max-w-2xl font-light leading-relaxed'>
                             Unparalleled luxury and comfort await at the world's most exclusive
                             hotels and resorts. Start your journey today.
                         </p>
 
-                        {/* Float Search Bar */}
-                        <Search />
+
                     </div>
                 </main>
             </div>
@@ -51,7 +50,7 @@ const Homepage = () => {
 
             {/* Recommended Hotels Section - Only for Logged In Users */}
             {user && (
-                <section className='container mx-auto px-4 md:px-20 mt-32'>
+                <section className='container mx-auto px-4 md:px-20 mt-20 md:mt-32'>
                     <div className='text-center mb-16'>
                         <h2 className='text-4xl font-serif font-medium text-gray-900 mb-4'>Recommended for You</h2>
                         <p className='text-gray-500 max-w-2xl mx-auto'>
@@ -106,7 +105,7 @@ const Homepage = () => {
             )}
 
             {/* Featured Destination Section */}
-            <section className='container mx-auto px-4 md:px-20 mt-32'>
+            <section className='container mx-auto px-4 md:px-20 mt-20 md:mt-32'>
                 <div className='text-center mb-16'>
                     <h2 className='text-4xl font-serif font-medium text-gray-900 mb-4'>Featured Destination</h2>
                     <p className='text-gray-500 max-w-2xl mx-auto'>
@@ -167,7 +166,7 @@ const Homepage = () => {
             </section>
 
             {/* Exclusive Offers Section */}
-            <section className='container mx-auto px-4 md:px-20 mt-32'>
+            <section className='container mx-auto px-4 md:px-20 mt-20 md:mt-32'>
                 <div className='flex flex-col md:flex-row justify-between items-end mb-12'>
                     <div className='max-w-xl'>
                         <h2 className='text-4xl font-serif font-medium text-gray-900 mb-4'>Exclusive Offers</h2>
@@ -210,7 +209,7 @@ const Homepage = () => {
             </section>
 
             {/* Testimonials Section */}
-            <section className='bg-white py-24 mt-32'>
+            <section className='bg-white py-16 md:py-24 mt-20 md:mt-32'>
                 <div className='container mx-auto px-4 md:px-20'>
                     <div className='text-center mb-16'>
                         <h2 className='text-4xl font-serif font-medium text-gray-900 mb-6'>What Our Guests Say</h2>

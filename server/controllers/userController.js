@@ -428,6 +428,8 @@ let mpesawebhook = async (req, res) => {
             return res.status(401).json({ success: false, message: "Unauthorized" });
         }
 
+        let user = await User.findOneAndUpdate({_id:req.user.id});
+
         // 2. Validate Payment State
         if (payload.state === "COMPLETE") {
             let bookingid = payload.api_ref; // IntaSend uses api_ref for internal IDs
@@ -449,7 +451,7 @@ let mpesawebhook = async (req, res) => {
             // 3. Send Confirmation (Ideally moved to a background job/queue)
             await transporter.sendMail({
                 from: process.env.EMAIL,
-                to: booking.user.email,
+                to: payload.email,
                 subject: "Hotel Booking Details",
                 html: `
                     <h1>Booking Confirmed</h1>

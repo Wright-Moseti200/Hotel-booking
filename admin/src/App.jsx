@@ -6,16 +6,19 @@ import AddRoom from './pages/AddRoom';
 import ListRoom from './pages/ListRoom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useState } from 'react';
 
 function App() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <BrowserRouter>
       <ToastContainer />
       <div className="bg-white min-h-screen text-slate-800 font-sans">
-        <Navbar />
+        <Navbar setSidebarOpen={setSidebarOpen} />
         <div className='flex items-start'>
-          <Sidebar />
-          <div className='w-[80%] p-8 bg-white min-h-[calc(100vh-80px)]'>
+          <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+          <div className='w-full md:w-[80%] p-4 md:p-8 bg-white min-h-[calc(100vh-80px)]'>
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/add-room" element={<AddRoom />} />

@@ -19,7 +19,7 @@ const Dashboard = () => {
                 <p className='text-gray-500 mt-2'>Monitor your room listings, track bookings and analyze revenue—all in one place. Stay updated with real-time insights to ensure smooth operations.</p>
             </div>
 
-            <div className='flex gap-5 mt-4'>
+            <div className='flex flex-col md:flex-row gap-5 mt-4'>
                 <div className='flex items-center gap-4 bg-slate-50 p-6 min-w-[300px] rounded-lg border border-slate-100'>
                     <div className='p-3 bg-blue-100 rounded-lg'>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-blue-600">

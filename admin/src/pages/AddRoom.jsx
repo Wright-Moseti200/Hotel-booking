@@ -74,13 +74,13 @@ const AddRoom = () => {
     return (
         <div className='flex flex-col gap-6 max-w-4xl'>
             <div>
-                <h1 className='text-3xl font-semibold'>Add Room</h1>
+                <h1 className='text-2xl md:text-3xl font-semibold'>Add Room</h1>
                 <p className='text-gray-500 mt-2'>Fill in the details carefully and accurate room details, pricing, and amenities, to enhance the user booking experience.</p>
             </div>
 
             <div className='flex flex-col gap-4'>
                 <p className='font-medium'>Images</p>
-                <div className='flex gap-4'>
+                <div className='grid grid-cols-2 md:flex gap-4'>
                     {/* Fixed 4 slots for simplicity matching design */}
                     {[0, 1, 2, 3].map((index) => (
                         <label key={index} className='w-32 h-20 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer bg-slate-50 hover:bg-slate-100 overflow-hidden relative'>
@@ -100,8 +100,8 @@ const AddRoom = () => {
                 </div>
             </div>
 
-            <div className='flex gap-10 items-center'>
-                <div className='flex flex-col gap-2 w-1/3'>
+            <div className='flex flex-col md:flex-row gap-4 md:gap-10 items-start md:items-center'>
+                <div className='flex flex-col gap-2 w-full md:w-1/3'>
                     <p className='font-medium'>Room Type</p>
                     <select
                         value={roomType}
@@ -114,7 +114,7 @@ const AddRoom = () => {
                         <option value="Luxury Suite">Luxury Suite</option>
                     </select>
                 </div>
-                <div className='flex flex-col gap-2 w-1/4'>
+                <div className='flex flex-col gap-2 w-full md:w-1/4'>
                     <p className='font-medium'>Price /night</p>
                     <input
                         type="number"
@@ -143,7 +143,7 @@ const AddRoom = () => {
             </div>
 
             <button onClick={handleSubmit} className='bg-blue-600 text-white px-8 py-2 rounded shadow hover:bg-blue-700 w-fit mt-4'>Add Room</button>
-        </div>
+        </div >
     )
 }
 

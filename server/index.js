@@ -8,6 +8,7 @@ const { connectDB } = require("./config/config");
 const { userRouter } = require("./routes/userRoutes");
 const { stripeWebHook, mpesawebhook } = require("./controllers/userController");
 const { adminRoutes } = require("./routes/adminRoutes");
+const { auth } = require("./middleware/auth");
 
 let port = 4000;
 let limit = rateLimit({
@@ -16,7 +17,7 @@ let limit = rateLimit({
 });
 app.set("trust proxy", 1);
 app.post("/webhook", express.raw({ type: "application/json" }), stripeWebHook);
-app.post("/mpesaWebhook", express.json(), mpesawebhook);
+app.post("/mpesaWebhook",express.json(), mpesawebhook);4
 app.use([express.json(), cookieparser(), limit, cors({ origin: ["http://localhost:5173", "http://localhost:5174"], credentials: true })]);
 
 connectDB();

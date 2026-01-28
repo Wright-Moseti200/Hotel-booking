@@ -36,12 +36,12 @@ const Bookings = () => {
         <div className="bg-white min-h-screen">
             <Navbar />
 
-            <div className="container mx-auto px-4 md:px-20 pt-32 pb-20">
+            <div className="container mx-auto px-4 md:px-20 pt-24 md:pt-32 pb-20">
                 {user ? (
                     <>
                         {/* Header */}
                         <div className="mb-12">
-                            <h1 className="text-5xl font-serif font-medium text-gray-900 mb-3">My Bookings</h1>
+                            <h1 className="text-3xl md:text-5xl font-serif font-medium text-gray-900 mb-3">My Bookings</h1>
                             <p className="text-gray-500 max-w-2xl text-base leading-relaxed">
                                 Easily manage your past, current, and upcoming hotel reservations in one place.
                                 Plan your trips seamlessly with just a few clicks.
@@ -109,10 +109,10 @@ const Bookings = () => {
                                         </div>
 
                                         {!booking.isPaid && (
-                                            <div className="flex gap-2">
+                                            <div className="flex gap-2 w-full md:w-auto">
                                                 <button
                                                     onClick={() => stripePayment(booking._id)}
-                                                    className="px-4 py-2 border border-blue-600 text-blue-600 rounded-lg text-sm font-bold hover:bg-blue-50 transition-colors">
+                                                    className="flex-1 md:flex-none px-4 py-2 border border-blue-600 text-blue-600 rounded-lg text-sm font-bold hover:bg-blue-50 transition-colors">
                                                     Stripe
                                                 </button>
                                                 <button
@@ -120,7 +120,7 @@ const Bookings = () => {
                                                         setSelectedBookingId(booking._id);
                                                         setMpesaModalOpen(true);
                                                     }}
-                                                    className="px-4 py-2 border border-green-600 text-green-600 rounded-lg text-sm font-bold hover:bg-green-50 transition-colors">
+                                                    className="flex-1 md:flex-none px-4 py-2 border border-green-600 text-green-600 rounded-lg text-sm font-bold hover:bg-green-50 transition-colors">
                                                     Mpesa
                                                 </button>
                                             </div>
