@@ -1,0 +1,5 @@
+2026-01-28T07:27:03.442Z: Received Stripe Webhook Request
+2026-01-28T07:27:03.447Z: Event constructed successfully: checkout.session.completed
+2026-01-28T07:27:03.447Z: Processing checkout.session.completed for bookingId: 6979a3b369c1e06b2e4a4e57
+2026-01-28T07:27:03.677Z: Booking updated successfully: 6979a3b369c1e06b2e4a4e57
+2026-01-28T07:27:16.425Z: Email sent successfully

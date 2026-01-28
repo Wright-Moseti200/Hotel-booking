@@ -116,4 +116,35 @@ let uploadimages = (req, res) => {
     }
 }
 
-module.exports = { getbooking, getroomlistings, addrooms, uploadimages }
+//update room status
+let updateroomstatus = async (req, res) => {
+    try {
+        let { roomId } = req.body
+        if (!roomId) {
+          return  res.status(404).json({
+                success: false,
+                message: "Room id not found"
+            });
+        }
+        let room = await Room.findOne({ _id: roomId });
+        if (!room) {
+            return res.status(404).json({
+                success: false,
+                message: "Room data is not available"
+            });
+        }
+        await Room.findByIdAndUpdate(roomId, { isAvailable: !room.isAvailable });
+        return res.status(200).json({
+            success: true,
+            message: "Room status updated"
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+module.exports = { getbooking, getroomlistings, addrooms, uploadimages, updateroomstatus }

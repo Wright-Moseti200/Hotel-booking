@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from 'react'
 import { Contextdata } from '../context/ContextProvider'
 
 const ListRoom = () => {
-    const { fetchRooms, allRooms } = useContext(Contextdata);
+    const { fetchRooms, allRooms, updateRoomStatus } = useContext(Contextdata);
 
     useEffect(() => {
         fetchRooms();
@@ -43,7 +43,12 @@ const ListRoom = () => {
                                         <td className='px-6 py-4'>$ {room.pricePerNight}</td>
                                         <td className='px-6 py-4 text-center'>
                                             <label className="relative inline-flex items-center cursor-pointer">
-                                                <input type="checkbox" className="sr-only peer" defaultChecked={true} disabled />
+                                                <input
+                                                    type="checkbox"
+                                                    className="sr-only peer"
+                                                    checked={!room.isAvailable}
+                                                    onChange={() => updateRoomStatus(room._id)}
+                                                />
                                                 <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
                                             </label>
                                         </td>

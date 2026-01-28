@@ -128,8 +128,14 @@ let booking = async (req, res) => {
             });
         }
 
-        await Room.findOneAndUpdate({ _id: roomId }, { isAvailable: false });
-
+        let room = await Room.findOne({ _id: roomId })
+        if (room.isAvailable === false) {
+            return res.status(401).json({
+                success: false,
+                message: "Room is already booked"
+            });
+        }
+        await room.updateOne({ isAvailable: false });
         let booking = new Booking({
             user: req.user.id,
             room: roomId,
@@ -262,18 +268,32 @@ let paymentStripe = async (req, res) => {
 
 //stripe webhook
 let stripeWebHook = async (req, res) => {
+    const fs = require('fs');
+    const path = require('path');
+    const logPath = path.join(__dirname, '../webhook_debug.log');
+    const log = (msg) => fs.appendFileSync(logPath, new Date().toISOString() + ': ' + msg + '\n');
+
     try {
+        log("Received Stripe Webhook Request");
         let event;
         let signature = req.headers["stripe-signature"];
         let signing_secret = process.env.SIGNING_KEY;
-        event = stripe.webhooks.constructEvent(req.body, signature, signing_secret);
-        console.log(event.type);
+
+        try {
+            event = stripe.webhooks.constructEvent(req.body, signature, signing_secret);
+            log("Event constructed successfully: " + event.type);
+        } catch (err) {
+            log("Signature verification failed: " + err.message);
+            return res.status(400).send(`Webhook Error: ${err.message}`);
+        }
 
         if (event.type === "checkout.session.completed") {
             const session = event.data.object;
             const bookingId = session.metadata.bookingId;
+            log("Processing checkout.session.completed for bookingId: " + bookingId);
 
             if (!bookingId) {
+                log("Missing bookingId in metadata");
                 return res.status(400).json({ success: false, message: "Missing bookingId in metadata" });
             }
 
@@ -284,25 +304,33 @@ let stripeWebHook = async (req, res) => {
             ).populate("user room hotel");
 
             if (!booking) {
+                log("Booking not found in DB: " + bookingId);
                 return res.status(404).json({ success: false, message: "Booking not found" });
             }
 
+            log("Booking updated successfully: " + booking._id);
+
             // Send Confirmation
-            await transporter.sendMail({
-                from: process.env.EMAIL,
-                to: session.customer_details?.email || booking.user.email,
-                subject: "Hotel Booking Details",
-                html: `
-                    <h1>Booking Confirmed</h1>
-                    <p>Thank you for your booking! Here are your details:</p>
-                    <p><strong>Booking ID:</strong> ${booking._id}</p>
-                    <p><strong>Hotel:</strong> ${booking.hotel.name}</p>
-                    <p><strong>Address:</strong> ${booking.hotel.address}, ${booking.hotel.city}</p>
-                    <p><strong>Total Paid:</strong> ${booking.totalPrice} KES</p>
-                    <br/>
-                    <p>We look forward to welcoming you!</p>
-                `
-            });
+            try {
+                await transporter.sendMail({
+                    from: process.env.EMAIL,
+                    to: session.customer_details?.email || booking.user.email,
+                    subject: "Hotel Booking Details",
+                    html: `
+                        <h1>Booking Confirmed</h1>
+                        <p>Thank you for your booking! Here are your details:</p>
+                        <p><strong>Booking ID:</strong> ${booking._id}</p>
+                        <p><strong>Hotel:</strong> ${booking.hotel.name}</p>
+                        <p><strong>Address:</strong> ${booking.hotel.address}, ${booking.hotel.city}</p>
+                        <p><strong>Total Paid:</strong> ${booking.totalPrice} KES</p>
+                        <br/>
+                        <p>We look forward to welcoming you!</p>
+                    `
+                });
+                log("Email sent successfully");
+            } catch (emailError) {
+                log("Error sending email: " + emailError.message);
+            }
 
             return res.status(200).json({ success: true, message: "Webhook processed" });
         }
@@ -313,6 +341,7 @@ let stripeWebHook = async (req, res) => {
         });
     }
     catch (error) {
+        if (typeof log === 'function') log("Stripe Webhook Unhandled Error: " + error.message);
         console.error("Stripe Webhook Error:", error);
         return res.status(500).json({
             success: false,
@@ -367,7 +396,7 @@ let mpesapayment = async (req, res) => {
             email: user.email,
             amount: bookings.totalPrice,
             currency: "KES",
-            api_ref: bookingid
+            api_ref: bookings._id
         });
         return res.status(200).json({
             success: true,
@@ -401,15 +430,15 @@ let mpesawebhook = async (req, res) => {
 
         // 2. Validate Payment State
         if (payload.state === "COMPLETE") {
-            const bookingId = payload.api_ref; // IntaSend uses api_ref for your internal IDs
+            let bookingid = payload.api_ref; // IntaSend uses api_ref for internal IDs
 
-            if (!bookingId) {
+            if (!bookingid) {
                 return res.status(400).json({ success: false, message: "Missing api_ref" });
             }
 
             // Update database
             const booking = await Booking.findByIdAndUpdate(
-                bookingId,
+                bookingid,
                 { paymentMethod: "Mpesa", isPaid: true }
             ).populate("user room hotel");
 
@@ -420,12 +449,20 @@ let mpesawebhook = async (req, res) => {
             // 3. Send Confirmation (Ideally moved to a background job/queue)
             await transporter.sendMail({
                 from: process.env.EMAIL,
-                to: payload.account, // Payload uses 'account' for customer email
+                to: booking.user.email,
                 subject: "Hotel Booking Details",
-                html: `<h1>Booking Confirmed</h1><p>ID: ${booking._id}</p>`
+                html: `
+                    <h1>Booking Confirmed</h1>
+                    <p>Thank you for your booking! Here are your details:</p>
+                    <p><strong>Booking ID:</strong> ${booking._id}</p>
+                    <p><strong>Hotel:</strong> ${booking.hotel.name}</p>
+                    <p><strong>Address:</strong> ${booking.hotel.address}, ${booking.hotel.city}</p>
+                    <p><strong>Total Paid:</strong> ${booking.totalPrice} KES</p>
+                    <br/>
+                    <p>We look forward to welcoming you!</p>
+                `
             });
 
-            // 4. Return 200 OK to stop retries
             return res.status(200).json({ success: true, message: "Webhook processed" });
         }
 

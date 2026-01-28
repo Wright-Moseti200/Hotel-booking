@@ -107,6 +107,24 @@ const ContextProvider = ({ children }) => {
     }
   };
 
+  // Update Room Status
+  const updateRoomStatus = async (roomId) => {
+    setLoading(true);
+    try {
+      const response = await api.post('/updateroomstatus', { roomId });
+      if (response.data.success) {
+        toast.success(response.data.message);
+        fetchRooms(); // Refresh the list to show new status
+      }
+      setLoading(false);
+      return response.data;
+    } catch (err) {
+      handleError(err);
+      setLoading(false);
+      return { success: false, message: err.response?.data?.message || err.message };
+    }
+  };
+
   return (
     <Contextdata.Provider value={{
       allBookings,
@@ -118,6 +136,7 @@ const ContextProvider = ({ children }) => {
       fetchRooms,
       addRoom,
       uploadImages,
+      updateRoomStatus,
       setError
     }}>
       {children}
