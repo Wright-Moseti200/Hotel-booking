@@ -17,7 +17,7 @@ let limit = rateLimit({
 });
 app.set("trust proxy", 1);
 app.post("/webhook", express.raw({ type: "application/json" }), stripeWebHook);
-app.post("/mpesaWebhook",express.json(), mpesawebhook);4
+app.post("/mpesaWebhook",express.json(), mpesawebhook);
 app.use([express.json(), cookieparser(), limit, cors({ origin: ["http://localhost:5173", "http://localhost:5174"], credentials: true })]);
 
 connectDB();
