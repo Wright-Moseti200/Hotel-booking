@@ -102,7 +102,9 @@ let signup = async (req, res) => {
         let token = jwt.sign(payload, process.env.JWT_PAS, { expiresIn: "1d" });
         res.cookie("token", token, {
             httpOnly: true,
-            sameSite: "strict",
+            secure:true,
+            sameSite: "lax",
+            path:"/",
             maxAge: 24 * 60 * 60 * 1000
         });
         return res.status(200).json({
