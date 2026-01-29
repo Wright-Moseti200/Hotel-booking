@@ -18,7 +18,7 @@ let getbooking = async (req, res) => {
         });
     }
     catch (error) {
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: error.message
         });
@@ -41,7 +41,7 @@ let getroomlistings = async (req, res) => {
         });
     }
     catch (error) {
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: error.message
         });
@@ -79,7 +79,7 @@ let addrooms = async (req, res) => {
         })
     }
     catch (error) {
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: error.message
         });
@@ -96,8 +96,8 @@ let uploadimages = (req, res) => {
             });
         }
         let urls = req.files.map((file) => file.path);
-        if (!urls) {
-            res.status(404).json({
+        if (!urls || urls.length === 0) {
+            return res.status(404).json({
                 success: false,
                 message: "No urls found"
             });
@@ -109,7 +109,7 @@ let uploadimages = (req, res) => {
         });
     }
     catch (error) {
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: error.message
         });
@@ -121,7 +121,7 @@ let updateroomstatus = async (req, res) => {
     try {
         let { roomId } = req.body
         if (!roomId) {
-          return  res.status(404).json({
+            return res.status(404).json({
                 success: false,
                 message: "Room id not found"
             });

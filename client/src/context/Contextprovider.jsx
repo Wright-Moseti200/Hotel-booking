@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useState } from 'react'
+import React, { createContext, useState, useEffect } from 'react'
 import { toast } from 'react-toastify';
 
 export const Contextdata = createContext();
@@ -35,7 +35,7 @@ const Contextprovider = ({ children }) => {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     getAuthToken();
     getRooms();
   }, []);
@@ -149,15 +149,22 @@ const Contextprovider = ({ children }) => {
 
 
   // Get All Rooms
+  // Get All Rooms
   const getRooms = async () => {
+    setLoading(true);
     try {
       const response = await fetch(`${backendUrl}/api/user/getrooms`, { credentials: 'include' });
       const data = await response.json();
       if (data.success && data.rooms) {
         setRooms(data.rooms);
+      } else {
+        throw new Error(data.message || "Failed to fetch rooms");
       }
     } catch (err) {
       console.log(err);
+      handleError(err);
+    } finally {
+      setLoading(false);
     }
   };
 

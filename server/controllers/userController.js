@@ -52,9 +52,9 @@ let login = async (req, res) => {
         let token = jwt.sign(payload, process.env.JWT_PAS, { expiresIn: "1d" });
         res.cookie("token", token, {
             httpOnly: true,
-            secure:true,
+            secure: true,
             sameSite: "none",
-            path:"/",
+            path: "/",
             maxAge: 24 * 60 * 60 * 1000
         });
         return res.status(200).json({
@@ -102,9 +102,9 @@ let signup = async (req, res) => {
         let token = jwt.sign(payload, process.env.JWT_PAS, { expiresIn: "1d" });
         res.cookie("token", token, {
             httpOnly: true,
-            secure:true,
+            secure: true,
             sameSite: "lax",
-            path:"/",
+            path: "/",
             maxAge: 24 * 60 * 60 * 1000
         });
         return res.status(200).json({
@@ -432,8 +432,6 @@ let mpesawebhook = async (req, res) => {
             return res.status(401).json({ success: false, message: "Unauthorized" });
         }
 
-        let user = await User.findOneAndUpdate({_id:req.user.id});
-
         // 2. Validate Payment State
         if (payload.state === "COMPLETE") {
             let bookingid = payload.api_ref; // IntaSend uses api_ref for internal IDs
@@ -492,13 +490,13 @@ let gettoken = async (req, res) => {
                 message: "Unauthorized"
             });
         }
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             token: token
         });
     }
     catch (error) {
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: error.message
         });
@@ -510,7 +508,7 @@ let getrooms = async (req, res) => {
     try {
         let rooms = await Room.find().populate("hotel");
         if (!rooms) {
-            res.status(404).json({
+            return res.status(404).json({
                 success: false,
                 message: "No rooms found"
             })
