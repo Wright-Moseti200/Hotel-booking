@@ -8,6 +8,6 @@ adminRoutes.get("/getbookings", getbooking);
 adminRoutes.get("/getroomlistings", getroomlistings);
 adminRoutes.post("/addrooms", auth, addrooms);
 adminRoutes.post("/uploadimages", upload.array("images", 5), uploadimages);
-adminRoutes.post("/updateroomstatus", auth, updateroomstatus);
+adminRoutes.post("/updateroomstatus", updateroomstatus);
 
 module.exports = { adminRoutes };
