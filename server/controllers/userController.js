@@ -384,56 +384,51 @@ let mpesapayment = async (req, res) => {
 let mpesawebhook = async (req, res) => {
     try {
         const payload = req.body;
+        console.log("Mpesa Webhook Received:", payload.state);
 
-        // 1. Verify Challenge (Security)
         if (payload.challenge !== process.env.INTASEND_CHALLENGE) {
+            console.error("Mpesa Unauthorized Challenge");
             return res.status(401).json({ success: false, message: "Unauthorized" });
         }
 
-        // 2. Validate Payment State
         if (payload.state === "COMPLETE") {
-            let bookingid = payload.api_ref; // IntaSend uses api_ref for internal IDs
+            const bookingid = payload.api_ref;
+            if (!bookingid) return res.status(400).send("Missing api_ref");
 
-            if (!bookingid) {
-                return res.status(400).json({ success: false, message: "Missing api_ref" });
-            }
-
-            // Update database
             const booking = await Booking.findByIdAndUpdate(
                 bookingid,
                 { paymentMethod: "Mpesa", isPaid: true }
             ).populate("user room hotel");
 
-            if (!booking) {
-                return res.status(404).json({ success: false, message: "Booking not found" });
+            if (booking) {
+                console.log(`Booking ${bookingid} marked as paid (Mpesa).`);
+
+                try {
+                    await transporter.sendMail({
+                        from: process.env.EMAIL,
+                        to: payload.email || booking.user?.email,
+                        subject: "Hotel Booking Confirmed",
+                        html: `
+                            <h1>Booking Confirmed</h1>
+                            <p>Thank you for your booking! Here are the details:</p>
+                            <p><strong>Booking ID:</strong> ${booking._id}</p>
+                            <p><strong>Hotel:</strong> ${booking.hotel?.name || 'N/A'}</p>
+                            <p><strong>Total Paid:</strong> ${booking.totalPrice} KES</p>
+                        `
+                    });
+                    console.log("Confirmation email sent.");
+                } catch (emailErr) {
+                    console.error("Failed to send email:", emailErr);
+                }
+            } else {
+                console.error(`Booking ${bookingid} not found.`);
             }
-
-            // 3. Send Confirmation (Ideally moved to a background job/queue)
-            await transporter.sendMail({
-                from: process.env.EMAIL,
-                to: payload.email,
-                subject: "Hotel Booking Details",
-                html: `
-                    <h1>Booking Confirmed</h1>
-                    <p>Thank you for your booking! Here are your details:</p>
-                    <p><strong>Booking ID:</strong> ${booking._id}</p>
-                    <p><strong>Hotel:</strong> ${booking.hotel.name}</p>
-                    <p><strong>Address:</strong> ${booking.hotel.address}, ${booking.hotel.city}</p>
-                    <p><strong>Total Paid:</strong> ${booking.totalPrice} KES</p>
-                    <br/>
-                    <p>We look forward to welcoming you!</p>
-                `
-            });
-
-            return res.status(200).json({ success: true, message: "Webhook processed" });
         }
 
-        // Handle other states (PENDING, PROCESSING, FAILED) if necessary
-        return res.status(200).json({ success: true, message: "State acknowledged" });
-
-    } catch (error) {
-        console.error("Webhook Error:", error);
-        return res.status(500).json({ success: false, message: "Internal Server Error" });
+        res.status(200).json({ success: true });
+    } catch (err) {
+        console.error("Mpesa Webhook Error:", err.message);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
 
