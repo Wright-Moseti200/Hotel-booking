@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Contextdata } from '../context/Contextprovider'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
-import { userBookingsDummyData, assets } from '../assets/assets'
+import {  assets } from '../assets/assets'
 
 const Bookings = () => {
     const { bookings, getUserBookings, user, stripePayment, mpesaPayment } = useContext(Contextdata);
