@@ -260,11 +260,6 @@ let paymentStripe = async (req, res) => {
 
 //stripe webhook
 let stripeWebHook = async (req, res) => {
-    const fs = require('fs');
-    const path = require('path');
-    const logPath = path.join(__dirname, '../webhook_debug.log');
-    const log = (msg) => fs.appendFileSync(logPath, new Date().toISOString() + ': ' + msg + '\n');
-
     try {
         log("Received Stripe Webhook Request");
         let event;
