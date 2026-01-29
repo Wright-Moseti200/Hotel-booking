@@ -21,7 +21,7 @@ const Navbar = () => {
         setIsScrolled(false);
       }
     };
-    
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -99,11 +99,11 @@ const Navbar = () => {
 
       {/* Mobile Menu Dropdown */}
       <div className={`fixed top-0 left-0 w-full h-screen bg-black/95 flex flex-col items-center justify-center gap-8 transition-transform duration-300 ease-in-out md:hidden ${isMenuOpen ? 'translate-y-0' : '-translate-y-full'}`}>
-        <a href="/" className='text-white text-2xl font-medium hover:text-gray-300 transition-colors'>Home</a>
-        <a href="/mybookings" className='text-white text-2xl font-medium hover:text-gray-300 transition-colors'>Bookings</a>
-        <a className='text-white text-2xl font-medium hover:text-gray-300 transition-colors'>Hotels</a>
-        <p className='text-white text-2xl font-medium hover:text-gray-300 transition-colors'>Experience</p>
-        <p className='text-white text-2xl font-medium hover:text-gray-300 transition-colors'>About</p>
+        <Link href="/" className='text-white text-2xl font-medium hover:text-gray-300 transition-colors'>Home</Link>
+        <Link href="/mybookings" className='text-white text-2xl font-medium hover:text-gray-300 transition-colors'>Bookings</Link>
+        <Link className='text-white text-2xl font-medium hover:text-gray-300 transition-colors'>Hotels</Link>
+        <Link className='text-white text-2xl font-medium hover:text-gray-300 transition-colors'>Experience</Link>
+        <Link className='text-white text-2xl font-medium hover:text-gray-300 transition-colors'>About</Link>
 
         <div className='w-full max-w-xs h-px bg-gray-800 my-2'></div>
 
@@ -118,7 +118,7 @@ const Navbar = () => {
 
         {user && (
           <button
-            onClick={() => window.location.href = 'http://localhost:5174'}
+            onClick={() => window.location.href = 'https://hotelbookingadmin.netlify.app'}
             className='text-white text-xl font-medium hover:text-gray-300 transition-colors'>
             Dashboard
           </button>

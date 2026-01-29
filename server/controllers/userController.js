@@ -241,8 +241,8 @@ let paymentStripe = async (req, res) => {
             payment_method_types: ["card"],
             line_items: lineitems,
             mode: "payment",
-            success_url: "http://localhost:5173/success",
-            cancel_url: "http://localhost:5173/cancel",
+            success_url: "https://hotelbookingwebiste.netlify.app/mybookings",
+            cancel_url: "https://hotelbookingwebiste.netlify.app/",
             customer_email: user.email,
             metadata: {
                 bookingId: bookingId
