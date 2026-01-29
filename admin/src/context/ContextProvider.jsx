@@ -17,11 +17,22 @@ const ContextProvider = ({ children }) => {
   // Base URL for API requests
   const api = axios.create({
     baseURL: 'https://hotel-booking-two-alpha.vercel.app/api/admin',
-    withCredentials: true, // Important for cookies
     headers: {
       'Content-Type': 'application/json',
     },
   });
+
+  // Add a request interceptor to inject the token from localStorage
+  api.interceptors.request.use(
+    (config) => {
+      const token = localStorage.getItem('auth-token');
+      if (token) {
+        config.headers['auth-token'] = token;
+      }
+      return config;
+    },
+    (error) => Promise.reject(error)
+  );
 
   // Handle errors uniformly
   const handleError = (err) => {

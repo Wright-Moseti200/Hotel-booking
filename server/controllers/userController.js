@@ -50,15 +50,9 @@ let login = async (req, res) => {
             }
         };
         let token = jwt.sign(payload, process.env.JWT_PAS, { expiresIn: "1d" });
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "none",
-            path: "/",
-            maxAge: 24 * 60 * 60 * 1000
-        });
         return res.status(200).json({
             success: true,
+            token: token,
             message: "logged in successfully"
         })
     }
@@ -100,15 +94,9 @@ let signup = async (req, res) => {
             }
         }
         let token = jwt.sign(payload, process.env.JWT_PAS, { expiresIn: "1d" });
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "none",
-            path: "/",
-            maxAge: 24 * 60 * 60 * 1000
-        });
         return res.status(200).json({
             success: true,
+            token: token,
             message: "Signed Up successfully"
         });
     }
@@ -357,12 +345,6 @@ let stripeWebHook = async (req, res) => {
 //logout
 let logout = async (req, res) => {
     try {
-        res.clearCookie("token", {
-            httpOnly: true,
-            secure: true,
-            sameSite: "none",
-            path: "/",
-        });
         return res.status(200).json({
             success: true,
             message: "logged out successfully"
@@ -485,28 +467,7 @@ let mpesawebhook = async (req, res) => {
 };
 
 
-//get auth token
-let gettoken = async (req, res) => {
-    try {
-        let token = req.cookies.token;
-        if (!token) {
-            return res.status(401).json({
-                success: false,
-                message: "Unauthorized"
-            });
-        }
-        return res.status(200).json({
-            success: true,
-            token: token
-        });
-    }
-    catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-}
+
 
 //get rooms
 let getrooms = async (req, res) => {
@@ -531,4 +492,4 @@ let getrooms = async (req, res) => {
     }
 }
 
-module.exports = { login, signup, booking, paymentStripe, stripeWebHook, getbookings, registerhotel, logout, mpesapayment, mpesawebhook, gettoken, getrooms };
+module.exports = { login, signup, booking, paymentStripe, stripeWebHook, getbookings, registerhotel, logout, mpesapayment, mpesawebhook, getrooms };

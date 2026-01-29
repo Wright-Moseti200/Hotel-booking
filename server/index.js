@@ -1,6 +1,5 @@
 let express = require("express");
 let app = express()
-let cookieparser = require("cookie-parser");
 let rateLimit = require("express-rate-limit");
 require("dotenv").config();
 let cors = require("cors");
@@ -17,8 +16,10 @@ let limit = rateLimit({
 });
 app.set("trust proxy", 1);
 app.post("/webhook", express.raw({ type: "application/json" }), stripeWebHook);
-app.post("/mpesaWebhook",express.json(), mpesawebhook);
-app.use([express.json(), cookieparser(), limit, cors({ origin: ["https://hotelbookingwebiste.netlify.app", "https://hotelbookingadmin.netlify.app"], credentials: true })]);
+app.post("/mpesaWebhook", express.json(), mpesawebhook);
+app.use([express.json(), limit, cors({
+    origin: ["https://hotelbookingwebiste.netlify.app", "https://hotelbookingadmin.netlify.app"],
+})]);
 
 connectDB();
 app.get("/", (req, res) => {

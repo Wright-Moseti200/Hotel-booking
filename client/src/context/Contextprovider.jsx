@@ -19,24 +19,11 @@ const Contextprovider = ({ children }) => {
   const [showHotelModal, setShowHotelModal] = useState(false);
 
   // Check for existing session
-  const getAuthToken = async () => {
-    try {
-      const response = await fetch(`${backendUrl}/api/user/gettoken`, { credentials: 'include' });
-      const data = await response.json();
-      if (data.success) {
-        // Since we don't get full user details, we set a basic object to indicate logged-in state
-        setUser({ token: data.token });
-      } else {
-        setUser(null);
-      }
-    } catch (err) {
-      console.log("Session check failed", err);
-      setUser(null);
-    }
-  };
-
   useEffect(() => {
-    getAuthToken();
+    const token = localStorage.getItem('auth-token');
+    if (token) {
+      setUser({ token });
+    }
     getRooms();
   }, []);
 
@@ -62,14 +49,13 @@ const Contextprovider = ({ children }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, password }),
-        credentials: 'include'
-
       });
       const data = await response.json();
       if (!data.success) throw new Error(data.message);
 
       toast.success("Signup successful!");
-      getAuthToken(); // Update state from cookie
+      localStorage.setItem('auth-token', data.token);
+      setUser({ token: data.token });
       return data;
     } catch (err) {
       handleError(err);
@@ -88,14 +74,13 @@ const Contextprovider = ({ children }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
-        credentials: 'include'
-
       });
       const data = await response.json();
       if (!data.success) throw new Error(data.message);
 
       toast.success("Login successful!");
-      getAuthToken(); // Update state from cookie
+      localStorage.setItem('auth-token', data.token);
+      setUser({ token: data.token });
       return data;
     } catch (err) {
       handleError(err);
@@ -109,9 +94,13 @@ const Contextprovider = ({ children }) => {
   const logout = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${backendUrl}/api/user/logout`, { method: 'GET', credentials: 'include' });
+      const response = await fetch(`${backendUrl}/api/user/logout`, {
+        method: 'GET',
+        headers: { 'auth-token': localStorage.getItem('auth-token') }
+      });
       const data = await response.json();
       if (data.success) {
+        localStorage.removeItem('auth-token');
         setUser(null);
         setBookings([]);
         toast.success("Logged out successfully");
@@ -128,7 +117,9 @@ const Contextprovider = ({ children }) => {
   const getUserBookings = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${backendUrl}/api/user/getbooking`, { credentials: 'include' });
+      const response = await fetch(`${backendUrl}/api/user/getbooking`, {
+        headers: { 'auth-token': localStorage.getItem('auth-token') }
+      });
       const data = await response.json();
       if (data.success) {
         setBookings(data.bookings);
@@ -153,7 +144,8 @@ const Contextprovider = ({ children }) => {
   const getRooms = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${backendUrl}/api/user/getrooms`, { credentials: 'include' });
+      // getrooms is public, so standard call is fine, but passing token doesn't hurt if we want to personalize later
+      const response = await fetch(`${backendUrl}/api/user/getrooms`);
       const data = await response.json();
       if (data.success && data.rooms) {
         setRooms(data.rooms);
@@ -175,10 +167,11 @@ const Contextprovider = ({ children }) => {
     try {
       const response = await fetch(`${backendUrl}/api/user/booking`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'auth-token': localStorage.getItem('auth-token')
+        },
         body: JSON.stringify(bookingData),
-        credentials: 'include'
-
       });
       const data = await response.json();
       if (data.success) {
@@ -204,10 +197,11 @@ const Contextprovider = ({ children }) => {
     try {
       const response = await fetch(`${backendUrl}/api/user/registerhotel`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'auth-token': localStorage.getItem('auth-token')
+        },
         body: JSON.stringify(hotelData),
-        credentials: 'include'
-
       });
       const data = await response.json();
       if (data.success) {
@@ -230,10 +224,11 @@ const Contextprovider = ({ children }) => {
     try {
       const response = await fetch(`${backendUrl}/api/user/stripepayment`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'auth-token': localStorage.getItem('auth-token')
+        },
         body: JSON.stringify({ bookingId }),
-        credentials: 'include'
-
       });
       const data = await response.json();
       if (data.success && data.url) {
@@ -256,10 +251,11 @@ const Contextprovider = ({ children }) => {
     try {
       const response = await fetch(`${backendUrl}/api/user/mpesaPayment`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'auth-token': localStorage.getItem('auth-token')
+        },
         body: JSON.stringify({ bookingid, phonenumber }),
-        credentials: 'include'
-
       });
       const data = await response.json();
       if (data.success) {
