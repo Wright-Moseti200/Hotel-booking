@@ -58,11 +58,11 @@ const Navbar = () => {
           </button>
 
           {user && (
-            <button
-              onClick={() => window.location.href = 'http://localhost:5174'}
+            <a
+              href='https://hotelbookingadmin.netlify.app'
               className='hidden md:block font-medium text-sm transition-colors text-gray-200 hover:text-white hover:cursor-pointer'>
               Dashboard
-            </button>
+            </a>
           )}
 
           {user ? (
@@ -117,11 +117,11 @@ const Navbar = () => {
         </button>
 
         {user && (
-          <button
-            onClick={() => window.location.href = 'https://hotelbookingadmin.netlify.app'}
+          <a
+            href='https://hotelbookingadmin.netlify.app'
             className='text-white text-xl font-medium hover:text-gray-300 transition-colors'>
             Dashboard
-          </button>
+          </a>
         )}
 
         {user ? (
