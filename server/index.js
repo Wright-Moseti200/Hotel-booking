@@ -7,7 +7,7 @@ const { connectDB } = require("./config/config");
 const { userRouter } = require("./routes/userRoutes");
 const { stripeWebHook, mpesawebhook } = require("./controllers/userController");
 const { adminRoutes } = require("./routes/adminRoutes");
-const { auth } = require("./middleware/auth");
+
 
 let port = 4000;
 let limit = rateLimit({

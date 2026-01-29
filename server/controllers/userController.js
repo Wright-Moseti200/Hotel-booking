@@ -261,79 +261,55 @@ let paymentStripe = async (req, res) => {
 //stripe webhook
 let stripeWebHook = async (req, res) => {
     try {
-        log("Received Stripe Webhook Request");
-        let event;
-        let signature = req.headers["stripe-signature"];
-        let signing_secret = process.env.SIGNING_KEY;
+        const signature = req.headers["stripe-signature"];
+        const event = stripe.webhooks.constructEvent(req.body, signature, process.env.SIGNING_KEY);
 
-        try {
-            event = stripe.webhooks.constructEvent(req.body, signature, signing_secret);
-            log("Event constructed successfully: " + event.type);
-        } catch (err) {
-            log("Signature verification failed: " + err.message);
-            return res.status(400).send(`Webhook Error: ${err.message}`);
-        }
+        console.log("Stripe Event Received:", event.type);
 
         if (event.type === "checkout.session.completed") {
             const session = event.data.object;
             const bookingId = session.metadata.bookingId;
-            log("Processing checkout.session.completed for bookingId: " + bookingId);
 
             if (!bookingId) {
-                log("Missing bookingId in metadata");
-                return res.status(400).json({ success: false, message: "Missing bookingId in metadata" });
+                console.error("No bookingId in session metadata");
+                return res.status(400).send("Missing bookingId");
             }
 
-            // Update database
             const booking = await Booking.findByIdAndUpdate(
                 bookingId,
                 { paymentMethod: "Stripe", isPaid: true }
             ).populate("user room hotel");
 
-            if (!booking) {
-                log("Booking not found in DB: " + bookingId);
-                return res.status(404).json({ success: false, message: "Booking not found" });
+            if (booking) {
+                console.log(`Booking ${bookingId} marked as paid.`);
+
+                // Send Confirmation Email
+                try {
+                    await transporter.sendMail({
+                        from: process.env.EMAIL,
+                        to: session.customer_details?.email || booking.user?.email,
+                        subject: "Hotel Booking Confirmed",
+                        html: `
+                            <h1>Booking Confirmed</h1>
+                            <p>Thank you for your booking! Here are the details:</p>
+                            <p><strong>Booking ID:</strong> ${booking._id}</p>
+                            <p><strong>Hotel:</strong> ${booking.hotel?.name || 'N/A'}</p>
+                            <p><strong>Total Paid:</strong> ${booking.totalPrice} KES</p>
+                        `
+                    });
+                    console.log("Confirmation email sent.");
+                } catch (emailErr) {
+                    console.error("Failed to send email:", emailErr);
+                }
+            } else {
+                console.error(`Booking ${bookingId} not found.`);
             }
-
-            log("Booking updated successfully: " + booking._id);
-
-            // Send Confirmation
-            try {
-                await transporter.sendMail({
-                    from: process.env.EMAIL,
-                    to: session.customer_details?.email || booking.user.email,
-                    subject: "Hotel Booking Details",
-                    html: `
-                        <h1>Booking Confirmed</h1>
-                        <p>Thank you for your booking! Here are your details:</p>
-                        <p><strong>Booking ID:</strong> ${booking._id}</p>
-                        <p><strong>Hotel:</strong> ${booking.hotel.name}</p>
-                        <p><strong>Address:</strong> ${booking.hotel.address}, ${booking.hotel.city}</p>
-                        <p><strong>Total Paid:</strong> ${booking.totalPrice} KES</p>
-                        <br/>
-                        <p>We look forward to welcoming you!</p>
-                    `
-                });
-                log("Email sent successfully");
-            } catch (emailError) {
-                log("Error sending email: " + emailError.message);
-            }
-
-            return res.status(200).json({ success: true, message: "Webhook processed" });
         }
 
-        return res.status(200).json({
-            success: true,
-            message: "Event received"
-        });
-    }
-    catch (error) {
-        if (typeof log === 'function') log("Stripe Webhook Unhandled Error: " + error.message);
-        console.error("Stripe Webhook Error:", error);
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        });
+        res.status(200).json({ success: true });
+    } catch (err) {
+        console.error("Webhook Error:", err.message);
+        res.status(400).send(`Webhook Error: ${err.message}`);
     }
 }
 
