@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import React, { useContext, useState, useEffect } from 'react'
 import { assets } from '../assets/assets'
 import { Contextdata } from '../context/Contextprovider'
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 const Navbar = () => {
   const { setShowAuthModal, setAuthMode, setShowHotelModal, showAuthModal, showHotelModal, user, logout } = useContext(Contextdata);
@@ -20,7 +21,7 @@ const Navbar = () => {
         setIsScrolled(false);
       }
     };
-
+    
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -39,11 +40,11 @@ const Navbar = () => {
 
         {/* Desktop Menu */}
         <div className='hidden md:flex gap-8'>
-          <a href="/" className='text-gray-200 hover:text-white cursor-pointer font-medium transition-colors'>Home</a>
-          <a href="/mybookings" className='text-gray-200 hover:text-white cursor-pointer font-medium transition-colors'>Bookings</a>
-          <a className='text-gray-200 hover:text-white cursor-pointer font-medium transition-colors'>Hotels</a>
-          <p className='text-gray-200 hover:text-white cursor-pointer font-medium transition-colors'>Experience</p>
-          <p className='text-gray-200 hover:text-white cursor-pointer font-medium transition-colors'>About</p>
+          <Link to="/" className='text-gray-200 hover:text-white cursor-pointer font-medium transition-colors'>Home</Link>
+          <Link to="/mybookings" className='text-gray-200 hover:text-white cursor-pointer font-medium transition-colors'>Bookings</Link>
+          <Link className='text-gray-200 hover:text-white cursor-pointer font-medium transition-colors'>Hotels</Link>
+          <Link className='text-gray-200 hover:text-white cursor-pointer font-medium transition-colors'>Experience</Link>
+          <Link className='text-gray-200 hover:text-white cursor-pointer font-medium transition-colors'>About</Link>
         </div>
 
         <div className='flex items-center gap-6'>
