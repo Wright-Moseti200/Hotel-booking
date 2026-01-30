@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import { Contextdata } from '../context/ContextProvider'
+import { Contextdata } from '../../context/Contextprovider'
 
 const AddRoom = () => {
     const { addRoom, uploadImages } = useContext(Contextdata);
@@ -30,13 +30,6 @@ const AddRoom = () => {
         }
 
         let imageUrls = [];
-
-        // Upload images one by one or in batch if API supported batch (API seems to support single file 'images' key or array? Controller says map req.files)
-        // Controller uses req.files.map... implies multiple files in one request under strictly 'images' key? or 'image'?
-        // Let's look at controller: "let urls=req.files.map((file)=>file.path);" -> it expects 'req.files'.
-        // Multer usually handles 'req.files' if configured for array.
-        // Let's assuming context `uploadImages` sends formData.
-        // We will separate uploads or try one batch.
 
         const formData = new FormData();
         images.forEach((image) => {
@@ -81,7 +74,6 @@ const AddRoom = () => {
             <div className='flex flex-col gap-4'>
                 <p className='font-medium'>Images</p>
                 <div className='grid grid-cols-2 md:flex gap-4'>
-                    {/* Fixed 4 slots for simplicity matching design */}
                     {[0, 1, 2, 3].map((index) => (
                         <label key={index} className='w-32 h-20 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer bg-slate-50 hover:bg-slate-100 overflow-hidden relative'>
                             {images[index] ? (

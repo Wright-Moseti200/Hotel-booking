@@ -58,11 +58,11 @@ const Navbar = () => {
           </button>
 
           {user && (
-            <a
-              href='https://hotelbookingadmin.netlify.app'
+            <Link
+              to='/admin'
               className='hidden md:block font-medium text-sm transition-colors text-gray-200 hover:text-white hover:cursor-pointer'>
               Dashboard
-            </a>
+            </Link>
           )}
 
           {user ? (
@@ -117,11 +117,11 @@ const Navbar = () => {
         </button>
 
         {user && (
-          <a
-            href='https://hotelbookingadmin.netlify.app'
+          <Link
+            to='/admin'
             className='text-white text-xl font-medium hover:text-gray-300 transition-colors'>
             Dashboard
-          </a>
+          </Link>
         )}
 
         {user ? (

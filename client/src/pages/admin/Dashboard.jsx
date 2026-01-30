@@ -1,16 +1,21 @@
 import React, { useContext, useEffect } from 'react'
-import { Contextdata } from '../context/ContextProvider'
+import { Contextdata } from '../../context/Contextprovider'
 
 const Dashboard = () => {
-    const { fetchBookings, allBookings, fetchRooms } = useContext(Contextdata);
+    // Note: fetchBookings in client context will need to be fetchAdminBookings or we reuse getUserBookings if updated for admin role?
+    // According to plan, we will merge context soon. For now, let's assume we rename/add fetchAdminBookings
+    // But since this is a direct copy, I will rely on context updates to match names.
+    // Ideally, I should align names. Let's assume standard names for now and fix context in next step.
+    // Actually, to avoid errors during intermediate steps, I'll use the names from the source and ensure context provides them.
+    const { fetchAdminBookings, allBookings, fetchRooms } = useContext(Contextdata);
 
     useEffect(() => {
-        fetchBookings();
-        fetchRooms();
+        if (fetchAdminBookings) fetchAdminBookings();
+        if (fetchRooms) fetchRooms();
     }, []);
 
     // Calculate total revenue
-    const totalRevenue = allBookings.reduce((acc, curr) => acc + (curr.totalPrice || 0), 0);
+    const totalRevenue = allBookings ? allBookings.reduce((acc, curr) => acc + (curr.totalPrice || 0), 0) : 0;
 
     return (
         <div className='flex flex-col gap-4'>
@@ -28,7 +33,7 @@ const Dashboard = () => {
                     </div>
                     <div>
                         <p className='text-blue-500 font-medium'>Total Bookings</p>
-                        <p className='text-gray-600 font-semibold text-lg'>{allBookings.length}</p>
+                        <p className='text-gray-600 font-semibold text-lg'>{allBookings ? allBookings.length : 0}</p>
                     </div>
                 </div>
                 <div className='flex items-center gap-4 bg-slate-50 p-6 min-w-[300px] rounded-lg border border-slate-100'>

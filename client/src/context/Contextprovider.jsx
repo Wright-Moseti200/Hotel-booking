@@ -8,6 +8,8 @@ const Contextprovider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [bookings, setBookings] = useState([]);
   const [rooms, setRooms] = useState([]);
+  const [allBookings, setAllBookings] = useState([]); // Admin
+  const [allRooms, setAllRooms] = useState([]); // Admin
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -272,11 +274,143 @@ const Contextprovider = ({ children }) => {
     }
   };
 
+  // Admin Functions
+
+  // Fetch All Bookings (Admin)
+  const fetchAdminBookings = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${backendUrl}/api/admin/getbookings`, {
+        // getbookings in admin is public? adminRoutes says: adminRoutes.get("/getbookings", getbooking);
+        // It seems it's public based on router? But ideally should be protected.
+        // Let's check adminRoutes again. "adminRoutes.get("/getbookings", getbooking);" -> No auth middleware.
+        // Wait, the plan was to merge contexts. Admin context was using request interceptor with token.
+        // Even if route is public, passing token doesn't hurt.
+        // Wait, "getbooking" controller doesn't use req.user.
+        // So it is public!
+      });
+      const data = await response.json();
+      if (data.success) {
+        setAllBookings(data.bookings);
+      }
+    } catch (err) {
+      handleError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch All Rooms (Admin listing)
+  const fetchAdminRooms = async () => {
+    // Renamed from fetchRooms to avoid conflict with user getRooms, but mapped to fetchRooms in export for Admin pages if possible?
+    // Actually Admin pages use 'fetchRooms'. I will export this as 'fetchRooms' ? No, 'getRooms' exists.
+    // I will export this as 'fetchRooms' property in value object to satisfy Admin components,
+    // but inside this file I call it fetchAdminRooms to avoid naming collision with 'getRooms' function.
+    // Wait, 'getRooms' uses `/api/user/getrooms`.
+    // Admin uses `/api/admin/getroomlistings`.
+
+    setLoading(true);
+    try {
+      const response = await fetch(`${backendUrl}/api/admin/getroomlistings`);
+      const data = await response.json();
+      if (data.success) {
+        setAllRooms(data.rooms);
+      }
+    } catch (err) {
+      handleError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Add Room
+  const addRoom = async (roomData) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`${backendUrl}/api/admin/addrooms`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'auth-token': localStorage.getItem('auth-token')
+        },
+        body: JSON.stringify(roomData)
+      });
+      const data = await response.json();
+      if (data.success) {
+        fetchAdminRooms(); // Refresh list
+        toast.success("Room added successfully!");
+      }
+      return data;
+    } catch (err) {
+      handleError(err);
+      return { success: false, message: err.message };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Upload Images
+  const uploadImages = async (formData) => {
+    setLoading(true);
+    try {
+      // Must set Content-Type to multipart/form-data for file uploads
+      // Fetch: when sending FormData, do NOT set Content-Type header manually, let browser set it with boundary.
+      // But we need auth token?
+      // Yes, if route requires it. "adminRoutes.post("/uploadimages", ... uploadimages)" - No auth middleware in route?
+      // "adminRoutes.post("/uploadimages", upload.array("images", 5), uploadimages);" -> No 'auth' middleware.
+      // So no token needed.
+
+      const response = await fetch(`${backendUrl}/api/admin/uploadimages`, {
+        method: 'POST',
+        body: formData
+      });
+      const data = await response.json();
+      if (data.success) {
+        toast.success("Image uploaded successfully!");
+      }
+      return data;
+    } catch (err) {
+      handleError(err);
+      return { success: false, message: err.message };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Update Room Status
+  const updateRoomStatus = async (roomId) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${backendUrl}/api/admin/updateroomstatus`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'auth-token': localStorage.getItem('auth-token')
+        },
+        body: JSON.stringify({ roomId })
+      });
+      const data = await response.json();
+      if (data.success) {
+        toast.success(data.message);
+        fetchAdminRooms(); // Refresh the list
+      }
+      return data;
+    } catch (err) {
+      handleError(err);
+      return { success: false, message: err.message };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Contextdata.Provider value={{
       user,
       bookings,
       rooms,
+      allBookings, // Admin
+      allRooms, // Admin (mapped to allRooms)
       loading,
       error,
       signup,
@@ -288,6 +422,16 @@ const Contextprovider = ({ children }) => {
       registerHotel,
       stripePayment,
       mpesaPayment,
+
+      // Admin Exports
+      fetchAdminBookings, // Admin component expects 'fetchBookings' ? No, I updated Dashboard to use fetchAdminBookings
+      fetchRooms: fetchAdminRooms, // Admin component expects 'fetchRooms'. I map fetchAdminRooms to fetchRooms. 
+      // User component expects 'getRooms'. 
+      // So `fetchRooms` -> `fetchAdminRooms` (Admin). `getRooms` -> `getRooms` (User).
+      addRoom,
+      uploadImages,
+      updateRoomStatus,
+
       showAuthModal, setShowAuthModal,
       authMode, setAuthMode,
       showHotelModal, setShowHotelModal

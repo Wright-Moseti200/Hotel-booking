@@ -10,6 +10,14 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
+import Dashboard from './pages/admin/Dashboard'
+import AddRoom from './pages/admin/AddRoom'
+import ListRoom from './pages/admin/ListRoom'
+import Sidebar from './components/admin/Sidebar'
+import AdminNavbar from './components/admin/AdminNavbar'
+import { useState } from 'react'
+
+
 const App = () => {
   return (
     <BrowserRouter>
@@ -18,6 +26,21 @@ const App = () => {
         <ToastContainer />
       </Contextprovider>
     </BrowserRouter>
+  )
+}
+
+const AdminLayout = ({ children }) => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  return (
+    <div className="bg-white min-h-screen text-slate-800 font-sans">
+      <AdminNavbar setSidebarOpen={setSidebarOpen} />
+      <div className='flex items-start'>
+        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        <div className='w-full md:w-[80%] p-4 md:p-8 bg-white min-h-[calc(100vh-80px)]'>
+          {children}
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -37,9 +60,15 @@ const MainApp = () => {
       />
 
       <Routes>
+        {/* User Routes */}
         <Route path='/' element={<Homepage />} />
         <Route path="rooms/:id" element={<Rooms />} />
         <Route path="mybookings" element={<Bookings />} />
+
+        {/* Admin Routes */}
+        <Route path="/admin" element={<AdminLayout><Dashboard /></AdminLayout>} />
+        <Route path="/admin/add-room" element={<AdminLayout><AddRoom /></AdminLayout>} />
+        <Route path="/admin/list-room" element={<AdminLayout><ListRoom /></AdminLayout>} />
       </Routes>
     </>
   )

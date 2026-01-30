@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react'
-import { Contextdata } from '../context/ContextProvider'
+import { Contextdata } from '../../context/Contextprovider'
 
 const ListRoom = () => {
     const { fetchRooms, allRooms, updateRoomStatus } = useContext(Contextdata);
