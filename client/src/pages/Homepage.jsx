@@ -29,15 +29,15 @@ const Homepage = () => {
 
                 <main className='relative z-10 flex flex-col h-full justify-center items-center px-4'>
                     <div className='flex flex-col items-center text-center max-w-4xl pt-20 md:pt-20'>
-                        <span className='bg-white/20 backdrop-blur-sm text-white px-6 py-2 rounded-full text-sm font-medium tracking-wide border border-white/30'>
+                        <span className='bg-white/20 backdrop-blur-sm text-white px-6 py-2 rounded-full text-xs md:text-sm font-medium tracking-wide border border-white/30'>
                             The Ultimate Hotel Experience
                         </span>
 
-                        <h1 className='text-white text-4xl md:text-7xl font-serif mt-8 font-bold leading-tight'>
+                        <h1 className='text-white text-3xl sm:text-5xl md:text-7xl font-serif mt-6 md:mt-8 font-bold leading-tight'>
                             Discover Your Perfect <br className='hidden md:block' /> Gateway Destination
                         </h1>
 
-                        <p className='mt-6 text-gray-200 text-base md:text-xl max-w-2xl font-light leading-relaxed'>
+                        <p className='mt-4 md:mt-6 text-gray-200 text-sm sm:text-base md:text-xl max-w-2xl font-light leading-relaxed px-4'>
                             Unparalleled luxury and comfort await at the world's most exclusive
                             hotels and resorts. Start your journey today.
                         </p>
@@ -50,10 +50,10 @@ const Homepage = () => {
 
             {/* Recommended Hotels Section - Only for Logged In Users */}
             {user && (
-                <section className='container mx-auto px-4 md:px-20 mt-20 md:mt-32'>
-                    <div className='text-center mb-16'>
-                        <h2 className='text-4xl font-serif font-medium text-gray-900 mb-4'>Recommended for You</h2>
-                        <p className='text-gray-500 max-w-2xl mx-auto'>
+                <section className='container mx-auto px-4 sm:px-8 md:px-12 lg:px-20 mt-12 md:mt-32'>
+                    <div className='text-center mb-10 md:mb-16'>
+                        <h2 className='text-3xl md:text-4xl font-serif font-medium text-gray-900 mb-4'>Recommended for You</h2>
+                        <p className='text-gray-500 max-w-2xl mx-auto text-sm md:text-base'>
                             Based on your preferences and previous stays, we've curated a list of exclusive properties just for you.
                         </p>
                     </div>
@@ -105,10 +105,10 @@ const Homepage = () => {
             )}
 
             {/* Featured Destination Section */}
-            <section className='container mx-auto px-4 md:px-20 mt-20 md:mt-32'>
-                <div className='text-center mb-16'>
-                    <h2 className='text-4xl font-serif font-medium text-gray-900 mb-4'>Featured Destination</h2>
-                    <p className='text-gray-500 max-w-2xl mx-auto'>
+            <section className='container mx-auto px-4 sm:px-8 md:px-12 lg:px-20 mt-12 md:mt-32'>
+                <div className='text-center mb-10 md:mb-16'>
+                    <h2 className='text-3xl md:text-4xl font-serif font-medium text-gray-900 mb-4'>Featured Destination</h2>
+                    <p className='text-gray-500 max-w-2xl mx-auto text-sm md:text-base'>
                         Discover our handpicked selection of exceptional properties around the world,
                         offering unparalleled luxury and unforgettable experiences.
                     </p>
@@ -166,11 +166,11 @@ const Homepage = () => {
             </section>
 
             {/* Exclusive Offers Section */}
-            <section className='container mx-auto px-4 md:px-20 mt-20 md:mt-32'>
-                <div className='flex flex-col md:flex-row justify-between items-end mb-12'>
-                    <div className='max-w-xl'>
-                        <h2 className='text-4xl font-serif font-medium text-gray-900 mb-4'>Exclusive Offers</h2>
-                        <p className='text-gray-500'>
+            <section className='container mx-auto px-4 sm:px-8 md:px-12 lg:px-20 mt-12 md:mt-32'>
+                <div className='flex flex-col md:flex-row justify-between items-end mb-8 md:mb-12 gap-4 md:gap-0'>
+                    <div className='max-w-xl text-center md:text-left w-full md:w-auto'>
+                        <h2 className='text-3xl md:text-4xl font-serif font-medium text-gray-900 mb-4'>Exclusive Offers</h2>
+                        <p className='text-gray-500 text-sm md:text-base'>
                             Take advantage of our limited-time offers and special packages to enhance your stay and create unforgettable memories.
                         </p>
                     </div>
@@ -209,11 +209,11 @@ const Homepage = () => {
             </section>
 
             {/* Testimonials Section */}
-            <section className='bg-white py-16 md:py-24 mt-20 md:mt-32'>
-                <div className='container mx-auto px-4 md:px-20'>
-                    <div className='text-center mb-16'>
-                        <h2 className='text-4xl font-serif font-medium text-gray-900 mb-6'>What Our Guests Say</h2>
-                        <p className='text-gray-500 max-w-2xl mx-auto'>
+            <section className='bg-white py-12 md:py-24 mt-12 md:mt-32'>
+                <div className='container mx-auto px-4 sm:px-8 md:px-12 lg:px-20'>
+                    <div className='text-center mb-10 md:mb-16'>
+                        <h2 className='text-3xl md:text-4xl font-serif font-medium text-gray-900 mb-6'>What Our Guests Say</h2>
+                        <p className='text-gray-500 max-w-2xl mx-auto text-sm md:text-base'>
                             Discover why discerning travelers consistently choose QuickStay for their exclusive and luxurious accommodations around the world.
                         </p>
                     </div>

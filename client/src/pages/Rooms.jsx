@@ -50,7 +50,7 @@ const Rooms = () => {
     <div className='bg-white min-h-screen'>
       <Navbar />
 
-      <div className="container mx-auto px-4 md:px-20 pt-24 md:pt-32 pb-20">
+      <div className="container mx-auto px-4 sm:px-8 md:px-12 lg:px-20 pt-24 md:pt-32 pb-20">
 
         {/* Header Section */}
         <div className="mb-8">
@@ -76,7 +76,7 @@ const Rooms = () => {
         </div>
 
         {/* Image Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-xl overflow-hidden mb-12 h-auto md:h-[500px]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-xl overflow-hidden mb-8 md:mb-12 h-auto md:h-[500px]">
           <div className="h-full">
             <img src={room.images[0]} className="w-full h-full object-cover hover:opacity-95 transition cursor-pointer" alt="Main Room" />
           </div>

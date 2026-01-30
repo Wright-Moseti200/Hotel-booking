@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Contextdata } from '../context/Contextprovider'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
-import {  assets } from '../assets/assets'
+import { assets } from '../assets/assets'
 
 const Bookings = () => {
     const { bookings, getUserBookings, user, stripePayment, mpesaPayment } = useContext(Contextdata);
@@ -36,13 +36,13 @@ const Bookings = () => {
         <div className="bg-white min-h-screen">
             <Navbar />
 
-            <div className="container mx-auto px-4 md:px-20 pt-24 md:pt-32 pb-20">
+            <div className="container mx-auto px-4 sm:px-8 md:px-12 lg:px-20 pt-24 md:pt-32 pb-20">
                 {user ? (
                     <>
                         {/* Header */}
-                        <div className="mb-12">
+                        <div className="mb-8 md:mb-12">
                             <h1 className="text-3xl md:text-5xl font-serif font-medium text-gray-900 mb-3">My Bookings</h1>
-                            <p className="text-gray-500 max-w-2xl text-base leading-relaxed">
+                            <p className="text-gray-500 max-w-2xl text-sm md:text-base leading-relaxed">
                                 Easily manage your past, current, and upcoming hotel reservations in one place.
                                 Plan your trips seamlessly with just a few clicks.
                             </p>
@@ -58,11 +58,11 @@ const Bookings = () => {
                         {/* Bookings List */}
                         <div className="space-y-8">
                             {displayBookings.map((booking) => (
-                                <div key={booking._id} className="grid grid-cols-1 md:grid-cols-[2fr_1.5fr_0.8fr] gap-8 py-8 border-b border-gray-100 last:border-0">
+                                <div key={booking._id} className="grid grid-cols-1 md:grid-cols-[2fr_1.5fr_0.8fr] gap-6 md:gap-8 py-8 border-b border-gray-100 last:border-0">
 
                                     {/* Hotel Column */}
-                                    <div className="flex gap-6">
-                                        <div className="w-32 h-24 rounded-lg overflow-hidden shrink-0">
+                                    <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                                        <div className="w-full sm:w-32 h-48 sm:h-24 rounded-lg overflow-hidden shrink-0">
                                             <img
                                                 src={booking.room?.images?.[0] || 'https://images.unsplash.com/photo-1566073771259-6a8506099945'}
                                                 alt={booking.hotel?.name}
