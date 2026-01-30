@@ -7,7 +7,7 @@ let auth = (req, res, next) => {
         if (!token) {
             return res.status(404).json({
                 success: false,
-                message: "Token not found"
+                message: "Unauthorized access"
             });
         }
         let data = jwt.verify(token, process.env.JWT_PAS);

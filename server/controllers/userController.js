@@ -160,6 +160,13 @@ let registerhotel = async (req, res) => {
                 message: "Enter all the credentials"
             });
         }
+        let hotels = await Hotel.findOne({owner:req.user.id});
+        if(hotels){
+            return res.status(400).json({
+                success:false,
+                message:"You have already registered a hotel"
+            });
+        }
         let hotel = new Hotel({
             name: name,
             address: address,
@@ -431,8 +438,6 @@ let mpesawebhook = async (req, res) => {
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
-
-
 
 
 //get rooms

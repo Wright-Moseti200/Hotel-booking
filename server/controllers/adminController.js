@@ -62,7 +62,7 @@ let addrooms = async (req, res) => {
         if (!hoteldata) {
             return res.status(404).json({
                 success: false,
-                message: "no data found"
+                message: "Register a hotel to add room"
             });
         }
         let rooms = new Room({
